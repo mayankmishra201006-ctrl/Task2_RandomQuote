@@ -1,3 +1,6 @@
+
+// script.js - Circular navigation + preserve answer visibility
+
 const flashcards = [
   { question: "What is HTML?", answer: "HTML stands for HyperText Markup Language." },
   { question: "What is CSS?", answer: "CSS is used for styling web pages." },
@@ -7,44 +10,52 @@ const flashcards = [
 ];
 
 let currentIndex = 0;
+// keep answer visibility across navigation
 let isAnswerVisible = false;
 
+// element refs
 const questionEl = document.getElementById("question");
 const answerEl = document.getElementById("answer");
 const showBtn = document.getElementById("showBtn");
 const nextBtn = document.getElementById("nextBtn");
 const prevBtn = document.getElementById("prevBtn");
 
-function loadCard() {
+// render/update function
+function renderCard() {
   questionEl.textContent = flashcards[currentIndex].question;
   answerEl.textContent = flashcards[currentIndex].answer;
 
-  if (isAnswerVisible) {
-    answerEl.style.display = "block";
-    showBtn.textContent = "Hide Answer";
-  } else {
-    answerEl.style.display = "none";
-    showBtn.textContent = "Show Answer";
-  }
+  // show or hide answer based on global state
+  answerEl.style.display = isAnswerVisible ? "block" : "none";
+  showBtn.textContent = isAnswerVisible ? "Hide Answer" : "Show Answer";
+
+  // Since navigation is circular, we do NOT disable prev/next
+  // but you can style disabled look if you want; here buttons remain clickable.
 }
 
-// ✅ Show / Hide Answer
+// toggle answer
 showBtn.addEventListener("click", () => {
   isAnswerVisible = !isAnswerVisible;
-  loadCard();
+  answerEl.style.display = isAnswerVisible ? "block" : "none";
+  showBtn.textContent = isAnswerVisible ? "Hide Answer" : "Show Answer";
 });
 
-// ✅ Next (Always Works)
+// next (circular)
 nextBtn.addEventListener("click", () => {
+  // move to next; if at last, wrap to 0
   currentIndex = (currentIndex + 1) % flashcards.length;
-  loadCard();
+  // preserve isAnswerVisible (no reset)
+  renderCard();
 });
 
-// ✅ Previous (Always Works)
+// previous (circular)
 prevBtn.addEventListener("click", () => {
+  // move to previous; if at 0, wrap to last
   currentIndex = (currentIndex - 1 + flashcards.length) % flashcards.length;
-  loadCard();
+  renderCard();
 });
 
-// ✅ First Load
-loadCard();
+// initial render
+document.addEventListener("DOMContentLoaded", () => {
+  renderCard();
+});
