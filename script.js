@@ -1,6 +1,4 @@
 
-// script.js - Circular navigation + preserve answer visibility
-
 const flashcards = [
   { question: "What is HTML?", answer: "HTML stands for HyperText Markup Language." },
   { question: "What is CSS?", answer: "CSS is used for styling web pages." },
@@ -9,53 +7,58 @@ const flashcards = [
   { question: "What is a function?", answer: "A function is a block of reusable code." }
 ];
 
+// index of current card
 let currentIndex = 0;
-// keep answer visibility across navigation
+
+// whether answer is currently visible (this variable keeps its value when we move to next/prev)
 let isAnswerVisible = false;
 
-// element refs
+// DOM elements
 const questionEl = document.getElementById("question");
 const answerEl = document.getElementById("answer");
 const showBtn = document.getElementById("showBtn");
 const nextBtn = document.getElementById("nextBtn");
 const prevBtn = document.getElementById("prevBtn");
 
-// render/update function
+// render the card (question + answer visibility)
 function renderCard() {
-  questionEl.textContent = flashcards[currentIndex].question;
-  answerEl.textContent = flashcards[currentIndex].answer;
+  const card = flashcards[currentIndex];
+  questionEl.textContent = card.question;
+  answerEl.textContent = card.answer;
 
-  // show or hide answer based on global state
+  // show or hide answer based on isAnswerVisible
   answerEl.style.display = isAnswerVisible ? "block" : "none";
+
+  // update Show/Hide button label
   showBtn.textContent = isAnswerVisible ? "Hide Answer" : "Show Answer";
 
-  // Since navigation is circular, we do NOT disable prev/next
-  // but you can style disabled look if you want; here buttons remain clickable.
+  // Optional: visually show disabled state if you had that; here circular so always enabled
+  // prevBtn.disabled = false;
+  // nextBtn.disabled = false;
 }
 
-// toggle answer
+// Toggle show/hide when user clicks showBtn
 showBtn.addEventListener("click", () => {
   isAnswerVisible = !isAnswerVisible;
   answerEl.style.display = isAnswerVisible ? "block" : "none";
   showBtn.textContent = isAnswerVisible ? "Hide Answer" : "Show Answer";
 });
 
-// next (circular)
+// Next button (circular)
 nextBtn.addEventListener("click", () => {
-  // move to next; if at last, wrap to 0
-  currentIndex = (currentIndex + 1) % flashcards.length;
-  // preserve isAnswerVisible (no reset)
+  currentIndex = (currentIndex + 1) % flashcards.length; // wrap to 0 after last
   renderCard();
 });
 
-// previous (circular)
+// Previous button (circular)
 prevBtn.addEventListener("click", () => {
-  // move to previous; if at 0, wrap to last
-  currentIndex = (currentIndex - 1 + flashcards.length) % flashcards.length;
+  currentIndex = (currentIndex - 1 + flashcards.length) % flashcards.length; // wrap to last from 0
   renderCard();
 });
 
-// initial render
+// Initialize on page load
 document.addEventListener("DOMContentLoaded", () => {
   renderCard();
 });
+
+
